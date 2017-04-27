@@ -30,16 +30,21 @@ public class DataBase {
         this.tabelas.add(tabela);
     }
     
-    public void addRegistro(String nomeTabela, Registro registro){
+    public Tabela getTabela(String nomeTabela){
         for (int i = 0; i < this.tabelas.tamanho(); i++) {
             Tabela tabela = this.tabelas.get(i);
             if(tabela.getNome().equals(nomeTabela)){
-                tabela.add(registro);
-                return;
+                return tabela;
             }
         }
         
         throw new IllegalArgumentException("Tabela não existe");
+    }
+    
+    
+    
+    public void addRegistro(String nomeTabela, RegistroAVL registro){
+        this.getTabela(nomeTabela).add(registro);
     }
     
    

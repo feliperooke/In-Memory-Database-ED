@@ -5,8 +5,6 @@
  */
 package imdb.utils;
 
-import java.util.ArrayList;
-
 /**
  *
  * @author felip

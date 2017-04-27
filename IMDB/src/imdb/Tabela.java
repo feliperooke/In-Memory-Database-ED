@@ -18,16 +18,20 @@ public class Tabela {
     private String nome;
     private Lista<String> campos;
     private Lista<String> indices;
-    private Registro registroTree;
+    public ArvoreAVL arvore;
 
     public Tabela() {
         this.indices = new Lista<>();
         this.campos = new Lista<>();
+        //this.arvore = new ArvoreBinaria();
+        this.arvore = new ArvoreAVL();
     }
     
     public Tabela(String json) {
         this.indices = new Lista<>();
         this.campos = new Lista<>();
+//        this.arvore = new ArvoreBinaria();
+        this.arvore = new ArvoreAVL();
         
         this.setJson(json);
     }
@@ -64,83 +68,14 @@ public class Tabela {
         this.indices.add(indice);
     }
     
-    public void add(Registro registro){
-        
-        /**
-         * TODO Tratar restrições do registro de acordo com os campos da tabela
-         */
-        
-        add(this.registroTree, registro);
+    public void add(RegistroAVL registro){
+        this.arvore.add(registro);
     }
     
-    private void add(Registro raiz, Registro novo) {
-        //se vazio 
-        if (registroTree == null) {
-            registroTree = novo;
-        } else //verifica se vai adicionar a direita
-        if (raiz.comparaCom(novo) < 0) {
-            //verifica se raiz tem elemento a direita
-            if (raiz.registroDireita != null) {
-                //se tem chama o add novamente
-                add(raiz.registroDireita, novo);
-            } else {
-                //se está vazio
-                raiz.registroDireita = novo;
-            }
-        } else if (raiz.registroEsquerda != null) {
-            //se tem chama o add novamente
-            add(raiz.registroEsquerda, novo);
-        } else {
-            //se está vazio
-            raiz.registroEsquerda = novo;
-        }
+    public RegistroAVL busca(String... chave) {
+        return this.arvore.busca(chave);
     }
-    
-    /**
-     * @TODO Fazer método de remoção da árvore
-     * @TODO Testar BUSCA
-     */
-    
-    public Registro busca(String... chave){
-        
-        Registro aux = new Registro();
-        for (String key : chave) {
-            aux.indices.add(key);
-        }
-        
-        return busca(registroTree, aux);
-    }
-    
-    private Registro busca(Registro raiz, Registro registroAux){
-        //se vazio 
-        if (registroTree == null) {
-            return null;
-        } else {
-            int comparacao = raiz.comparaCom(registroAux);
-            if (comparacao == 0) return raiz; 
-            else if (comparacao < 0) {
-                //verifica se raiz tem elemento a direita
-                if (raiz.registroDireita != null){
-                    //se tem chama a busca novamente
-                    busca(raiz.registroDireita, registroAux);
-                } else {
-                    //se está vazio, quer dizer que o elemento não está na árvore
-                    return null;
-                }
-            //verifica se raiz tem elemento a esquerda    
-            } else if (raiz.registroEsquerda != null) {
-                //se tem chama a busca novamente
-                add(raiz.registroEsquerda, registroAux);
-            } else {
-                //se está vazio, quer dizer que o elemento não está na árvore
-                return null;
-            }
-        }
-        
-        return null;
-    }
-    
-    
+  
     public String getJson(){
         JSONObject object = new JSONObject();
         try {

@@ -6,6 +6,11 @@
  */
 package imdb;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Scanner;
 import jdk.nashorn.internal.parser.JSONParser
 ;
 import org.json.JSONObject;
@@ -33,7 +38,6 @@ public class IMDB {
         
         Tabela data_src = new Tabela();
         data_src.setNome("data_src");
-        data_src.addCampo("datasrc_id");
         data_src.addCampo("authors");
         data_src.addCampo("title");
         data_src.addCampo("year");
@@ -45,22 +49,38 @@ public class IMDB {
         data_src.addIndice("datasrc_id");
         
         db.addTabela(data_src);
-
+        
+//        ArvoreAVL arvoreAVL = new ArvoreAVL();
+//        
+//        for (int i = 0; i < 10; i++) {
+//            RegistroAVL r0 = new RegistroAVL();
+//            r0.addIndice(String.valueOf(i));
+//            arvoreAVL.add(r0);
+//        }
+//        RegistroAVL r0 = new RegistroAVL();
+//        r0.addIndice("99");
+//        arvoreAVL.add(r0);
+//        
+//        TreePrinter.print(arvoreAVL.raiz);
+//        
+        
+        
         /**
          * Criando tabelas com json
          */
         
-        db.addTabela(new Tabela("{nome: 'datsrcln', campos:['ndb_no','nutr_no','datasrc_id'], indices:['ndb_no','nutr_no','datasrc_id']}"));
-        db.addTabela(new Tabela("{nome:'deriv_cd', campos:['deriv_cd','derivcd_desc'], indices:['deriv_cd']}"));
-        db.addTabela(new Tabela("{nome:'fd_group', campos:['fdgrp_cd','fddrp_desc'], indices:['fdgrp_cd']}"));
-        db.addTabela(new Tabela("{nome:'footnote', campos:['ndb_no','footnt_no','footnt_typ','nutr_no','footnt_txt'], indices:['ndb_no','footnt_no']}"));
-        db.addTabela(new Tabela("{nome:'nut_data', campos:['ndb_no','nutr_no','nutr_val','num_data_pts','std_error','src_cd','deriv_cd','ref_ndb_no','add_nutr_mark','num_studies','min','max','df','low_eb','up_eb','stat_cmt','cc'], indices:['ndb_no','nutr_no']}"));
-        db.addTabela(new Tabela("{nome:'nutr_def', campos:['nutr_no','units','tagname','nutrdesc','num_dec','sr_order'], indices:['nutr_no']}"));
-        db.addTabela(new Tabela("{nome:'src_cd', campos:['src_cd','srccd_desc'], indices:['src_cd']}"));
-        db.addTabela(new Tabela("{nome:'weight', campos:['ndb_no','seq','amount','msre_desc','gm_wgt','num_data_pts','std_dev'], indices:['ndb_no']}"));
+        db.addTabela(new Tabela("{nome: 'datsrcln', campos:[], indices:['ndb_no','nutr_no','datasrc_id']}"));
+        db.addTabela(new Tabela("{nome:'deriv_cd', campos:['derivcd_desc'], indices:['deriv_cd']}"));
+        db.addTabela(new Tabela("{nome:'fd_group', campos:['fddrp_desc'], indices:['fdgrp_cd']}"));
+        db.addTabela(new Tabela("{nome:'food_des', campos:['long_desc','shrt_desc','comname','manufacname','survey','ref_desc','refuse','sciname','n_factor','pro_factor','fat_factor','cho_factor'], indices:['ndb_no','fdgrp_cd']}"));
+        db.addTabela(new Tabela("{nome:'footnote', campos:['footnt_typ','nutr_no','footnt_txt'], indices:['ndb_no','footnt_no']}"));
+        db.addTabela(new Tabela("{nome:'nut_data', campos:['nutr_val','num_data_pts','std_error','src_cd','deriv_cd','ref_ndb_no','add_nutr_mark','num_studies','min','max','df','low_eb','up_eb','stat_cmt','cc'], indices:['ndb_no','nutr_no']}"));
+        db.addTabela(new Tabela("{nome:'nutr_def', campos:['units','tagname','nutrdesc','num_dec','sr_order'], indices:['nutr_no']}"));
+        db.addTabela(new Tabela("{nome:'src_cd', campos:['srccd_desc'], indices:['src_cd']}"));
+        db.addTabela(new Tabela("{nome:'weight', campos:['seq','amount','msre_desc','gm_wgt','num_data_pts','std_dev'], indices:['ndb_no']}"));
 
     
-        
+        /*
         Registro r1 = new Registro();
         r1.addIndice("D1066");
         r1.addValor("G.V. Mann");
@@ -102,7 +122,7 @@ public class IMDB {
                     + "'636',"
                     + "'638']"
                 + "}");
-        
+        */
 
         /**
          * TODO fazer leitura de arquivo contendo dados para carregamento
@@ -110,6 +130,116 @@ public class IMDB {
         
         System.out.println(db.toString());
 
+        try (BufferedReader buffRead = new BufferedReader(new FileReader("usda.sql"))) {
+            String linha = "";
+            int[] posicaoDosIndices = null;
+            int[] posicaoDosCampos = null;
+            boolean leitura = false;
+            Tabela tabela = null;
+            while (true) {
+                if (linha != null) {
+                    
+                    
+                    //testa se chegou em uma linha com a palavra COPY
+                    if(linha.matches("COPY.*")){
+                        //verifica qual tabela é e inicia a flag de leitura dos registros
+                        String[] aux = linha.split("COPY ")[1].split(" \\(");
+                        String nomeDaTabela = aux[0];
+                        String[] campos = aux[1].split("\\)")[0].replaceAll(" |\"", "").split(",");
+                        
+                        tabela = db.getTabela(nomeDaTabela);
+                        
+                        int tamanhoIndices = tabela.getIndices().tamanho();
+                        posicaoDosIndices = new int[tamanhoIndices];
+                        
+                        //defino em quais posições estarão os indices
+                        for (int i = 0; i < tamanhoIndices; i++) {
+                            for (int j = 0; j < campos.length; j++) {
+                                if(tabela.getIndices().get(i).equals(campos[j])){
+                                    //se achei a posição do indice no array de campos, armazeno a posição dele
+                                    posicaoDosIndices[i] = j;
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        int tamanhoCampos = tabela.getCampos().tamanho();
+                        posicaoDosCampos = new int[tamanhoCampos];
+                        
+                        //defino em quais posições estarão os campos
+                        for (int i = 0; i < tamanhoCampos; i++) {
+                            for (int j = 0; j < campos.length; j++) {
+                                if(tabela.getCampos().get(i).equals(campos[j])){
+                                    //se achei a posição do indice no array de campos, armazeno a posição dele
+                                    posicaoDosCampos[i] = j;
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        leitura = true;
+                        
+                        System.out.println(linha);
+                    }else if(linha.matches("\\\\.")){
+                        System.out.println(linha);
+                        //termina leitura
+                        leitura = false;
+                        
+                        posicaoDosIndices = null;
+                        posicaoDosCampos = null;
+                        leitura = false;
+                        tabela = null;
+                        
+                        
+                    }else if(leitura){
+                        
+                        //pega os valores
+                        String[] valores = linha.split("\t",-1);
+                        
+                        RegistroAVL r = new RegistroAVL();
+                        
+                        for (int i = 0; i < posicaoDosIndices.length; i++) {
+                            r.addIndice(valores[posicaoDosIndices[i]].trim());
+                        }
+                        
+                        for (int i = 0; i < posicaoDosCampos.length; i++) {
+                            r.addValor(valores[posicaoDosCampos[i]].trim());
+                        }
+                        
+                        try{
+                            tabela.add(r);
+                        } catch (Exception e) {
+                            System.out.println("Fudeu");
+                        }
+                        
+                        
+                        
+                    }
+                    
+                    
+                    
+
+                } else {
+                    break;
+                }
+                linha = buffRead.readLine();
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        Scanner leitor = new Scanner(System.in);
+
+        while (true) {            
+            System.out.print("Digite o nome da tabela do registro a ser buscado: ");
+            String nomeTabela = leitor.next();
+            System.out.print("Digite o indice do registro a ser buscado (caso o registro seja comporto por mais de um indice, separe-os por ';'): ");
+            String indicesDoRegistro = leitor.next();
+            
+            String registro = db.getTabela(nomeTabela).busca(indicesDoRegistro.split(";")).getJson();
+            System.out.println(registro);
+            
+        }
         
         
     }
