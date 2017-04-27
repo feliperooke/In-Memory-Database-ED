@@ -9,7 +9,7 @@ package imdb;
  *
  * @author felip
  */
-public class ArvoreBinaria {
+public class ArvoreBinaria{
 
     Registro raiz = null;
 
@@ -109,24 +109,12 @@ public class ArvoreBinaria {
                 return raiz;
             } else if (comparacao < 0) {
                 //verifica se raiz tem elemento a direita
-                if (raiz.registroDireita != null) {
-                    //se tem chama a busca novamente
-                    busca(raiz.registroDireita, registroAux);
-                } else {
-                    //se está vazio, quer dizer que o elemento não está na árvore
-                    return null;
-                }
-                //verifica se raiz tem elemento a esquerda    
-            } else if (raiz.registroEsquerda != null) {
-                //se tem chama a busca novamente
-                add(raiz.registroEsquerda, registroAux);
+                return busca(raiz.registroDireita, registroAux);
             } else {
-                //se está vazio, quer dizer que o elemento não está na árvore
-                return null;
+                //se tem chama a busca novamente
+                return busca(raiz.registroEsquerda, registroAux);
             }
         }
-
-        return null;
     }
 
 }

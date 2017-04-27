@@ -14,7 +14,7 @@ import org.json.JSONObject;
  *
  * @author felip
  */
-public class Registro {
+public class Registro implements TreePrinter.PrintableNode{
     
     Lista<String> indices;
     Lista<String> valores;
@@ -33,6 +33,28 @@ public class Registro {
         
         this.setJson(json);
     }
+    
+    public void addIndice(String indice){
+        this.indices.add(indice);
+    }
+    
+    public void addValor(String valor){
+        this.valores.add(valor);
+    }
+    
+    public int comparaCom(Registro noParaComparacao){
+        
+        for (int i = 0; i < this.indices.tamanho(); i++) {
+            //o String.compareTo compara caracter a caracter e seu pior caso é o tamanho da menor string
+            int comparacao = this.indices.get(i).compareTo(noParaComparacao.indices.get(i));
+            if( comparacao < 0) return -1;
+            else if(comparacao > 0) return 1;
+            //caso seja igual ele vai para o próximo indice da lista
+        }
+        
+        //caso sejam todas as chaves iguais, considera que é maior
+        return 0;
+    }   
     
     public String getJson(){
         JSONObject object = new JSONObject();
@@ -56,7 +78,7 @@ public class Registro {
         return object.toString();
     }
     
-    private void setJson(String json){
+    public void setJson(String json){
         JSONObject obj = new JSONObject(json);
         
         JSONArray arr = obj.getJSONArray("indices");
@@ -70,25 +92,18 @@ public class Registro {
         }
     }
     
-    public void addIndice(String indice){
-        this.indices.add(indice);
+    @Override
+    public TreePrinter.PrintableNode getLeft() {
+        return this.registroEsquerda;
     }
-    
-    public void addValor(String valor){
-        this.valores.add(valor);
+
+    @Override
+    public TreePrinter.PrintableNode getRight() {
+        return this.registroDireita;
     }
-    
-    public int comparaCom(Registro noParaComparacao){
-        
-        for (int i = 0; i < this.indices.tamanho(); i++) {
-            //o String.compareTo compara caracter a caracter e seu pior caso é o tamanho da menor string
-            int comparacao = this.indices.get(i).compareTo(noParaComparacao.indices.get(i));
-            if( comparacao < 0) return -1;
-            else if(comparacao > 0) return 1;
-            //caso seja igual ele vai para o próximo indice da lista
-        }
-        
-        //caso sejam todas as chaves iguais, considera que é maior
-        return 0;
+
+    @Override
+    public String getText() {
+        return indices.get(0);
     }
 }

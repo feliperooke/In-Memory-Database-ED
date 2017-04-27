@@ -132,47 +132,6 @@ public class ArvoreAVL {
         }
     }
 
-    private void addNaoRecursivo(RegistroAVL raiz, RegistroAVL novo) {
-
-        //se vazio 
-        if (raiz == null) {
-            raiz = novo;
-        } else {
-            RegistroAVL aux = raiz;
-            while (true) {
-                //verifica se vai adicionar a direita
-                if (aux.comparaCom(novo) < 0) {
-                    //verifica se aux tem elemento a direita, se tem, tenho que continuar caminhando
-                    if (aux.registroDireita != null) {
-                        aux = aux.registroDireita;
-                        //se não tem, é aqui que vou adicionar    
-                    } else {
-                        aux.registroDireita = novo;
-
-                        System.out.println("registro: " + novo.indices.get(0) + " direita");
-
-                        break;
-
-                    }
-                    //se não é a direita é a esquerda
-                } else //verifica se aux tem elemento a esquerda, se tem, tenho que continuar caminhando
-                if (aux.registroEsquerda != null) {
-                    aux = aux.registroEsquerda;
-                    //se não tem, é aqui que vou adicionar    
-                } else {
-                    aux.registroEsquerda = novo;
-
-                    System.out.println("registro: " + novo.indices.get(0) + " esquerda");
-
-                    break;
-                }
-
-            }
-
-        }
-
-    }
-
     /**
      * @TODO Fazer método de remoção da árvore
      * @TODO Testar BUSCA
