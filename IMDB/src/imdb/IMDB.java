@@ -219,35 +219,35 @@ public class IMDB {
         
         Scanner leitor = new Scanner(System.in);
 
-//        while (true) {            
-//            System.out.print("Digite o nome da tabela do registro a ser buscado: ");
-//            Tabela tabela = null;
-//            while (tabela == null) {
-//                String nomeTabela = leitor.next();
-//                try {
-//                    tabela = db.getTabela(nomeTabela);
-//                } catch (Exception e) {
-//                    System.out.println("Tabela não encontrada, tente novamente.");
-//                }
-//            }
-//            
-//            System.out.print("Digite o indice do registro a ser buscado (caso o registro seja composto por mais de um indice, separe-os por ';'): ");
-//            Registro registro = null;
-//            while (registro == null) {                
-//                    String indicesDoRegistro = leitor.next();
-//                    registro = tabela.busca(indicesDoRegistro.split(";"));
-//                    if(registro == null) {
-//                        System.out.println("Registro não encontrada, tente novamente.");
-//                        TreePrinter.print(tabela.arvore.raiz);
-//                    }
-//            }
-//            
-//            
-//            
-//            System.out.println("O Registro buscado foi:");
-//            System.out.println(registro.getJson());
-//            
-//        }
+        while (true) {            
+            System.out.print("Digite o nome da tabela do registro a ser buscado: ");
+            Tabela tabela = null;
+            while (tabela == null) {
+                String nomeTabela = leitor.next();
+                try {
+                    tabela = db.getTabela(nomeTabela);
+                } catch (Exception e) {
+                    System.out.println("Tabela não encontrada, tente novamente.");
+                }
+            }
+            
+            System.out.print("Digite o indice do registro a ser buscado (caso o registro seja composto por mais de um indice, separe-os por ';'): ");
+            Registro registro = null;
+            while (registro == null) {                
+                    String indicesDoRegistro = leitor.next();
+                    registro = tabela.busca(indicesDoRegistro.split(";"));
+                    if(registro == null) {
+                        System.out.println("Registro não encontrada, tente novamente.");
+                        TreePrinter.print(tabela.arvore.raiz);
+                    }
+            }
+            
+            
+            
+            System.out.println("O Registro buscado foi:");
+            System.out.println(registro.getJson());
+            
+        }
         
         
     }
