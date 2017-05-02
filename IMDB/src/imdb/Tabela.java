@@ -6,6 +6,7 @@
 package imdb;
 
 import imdb.utils.Lista;
+import java.util.Objects;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -73,7 +74,7 @@ public class Tabela {
     }
     
     public RegistroAVL busca(String... chave) {
-        return this.arvore.busca(chave);
+        return (RegistroAVL)this.arvore.busca(chave);
     }
   
     public String getJson(){
@@ -111,6 +112,33 @@ public class Tabela {
             this.indices.add(arr.getString(i));
         }
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Tabela other = (Tabela) obj;
+        if (!Objects.equals(this.nome, other.nome)) {
+            return false;
+        }
+        return true;
+    }
+    
+    
+    
     
     
 }

@@ -13,12 +13,9 @@ public class ArvoreBinaria{
 
     Registro raiz = null;
 
-    public void add(Registro registro) {
-
-        /**
-         * TODO Tratar restrições do registro de acordo com os campos da tabela
-         */
+    public boolean add(Registro registro) {
         addNaoRecursivo(this.raiz, registro);
+        return true;
     }
 
     private void add(Registro raiz, Registro novo) {
@@ -61,7 +58,7 @@ public class ArvoreBinaria{
                     } else {
                         aux.registroDireita = novo;
 
-                        System.out.println("registro: " + novo.indices.get(0) + " direita");
+                        //System.out.println("registro: " + novo.indices.get(0) + " direita");
 
                         break;
 
@@ -74,7 +71,7 @@ public class ArvoreBinaria{
                 } else {
                     aux.registroEsquerda = novo;
 
-                    System.out.println("registro: " + novo.indices.get(0) + " esquerda");
+                    //System.out.println("registro: " + novo.indices.get(0) + " esquerda");
 
                     break;
                 }
@@ -87,7 +84,6 @@ public class ArvoreBinaria{
 
     /**
      * @TODO Fazer método de remoção da árvore
-     * @TODO Testar BUSCA
      */
     public Registro busca(String... chave) {
 
@@ -96,10 +92,10 @@ public class ArvoreBinaria{
             aux.indices.add(key);
         }
 
-        return busca(raiz, aux);
+        return busca(this.raiz, aux);
     }
 
-    private Registro busca(Registro raiz, Registro registroAux) {
+    protected Registro busca(Registro raiz, Registro registroAux) {
         //se vazio 
         if (raiz == null) {
             return null;

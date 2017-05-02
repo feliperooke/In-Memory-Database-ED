@@ -11,20 +11,15 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
-import jdk.nashorn.internal.parser.JSONParser
-;
+import jdk.nashorn.internal.parser.JSONParser;
 import org.json.JSONObject;
+
 /**
  *
- * @author felip
+ * @author Felipe Rooke
  */
 public class IMDB {
-
-    /**
-     * @param args the command line arguments
-     */
     public static void main(String[] args) {
-        // TODO code application logic here
         
         /*
         Inspiração http://lokijs.org/#/
@@ -32,12 +27,18 @@ public class IMDB {
         
         DataBase db = new DataBase();
         
+        System.out.println("Iniciando criação das tabelas...");
+        
         /**
          * Criando tabela passando parametros para o objeto
          */
         
         Tabela data_src = new Tabela();
+        //Nome
         data_src.setNome("data_src");
+        //Indice
+        data_src.addIndice("datasrc_id");
+        //Campos
         data_src.addCampo("authors");
         data_src.addCampo("title");
         data_src.addCampo("year");
@@ -46,27 +47,12 @@ public class IMDB {
         data_src.addCampo("issue_state");
         data_src.addCampo("start_page");
         data_src.addCampo("end_page");
-        data_src.addIndice("datasrc_id");
         
         db.addTabela(data_src);
         
-//        ArvoreAVL arvoreAVL = new ArvoreAVL();
-//        
-//        for (int i = 0; i < 10; i++) {
-//            RegistroAVL r0 = new RegistroAVL();
-//            r0.addIndice(String.valueOf(i));
-//            arvoreAVL.add(r0);
-//        }
-//        RegistroAVL r0 = new RegistroAVL();
-//        r0.addIndice("99");
-//        arvoreAVL.add(r0);
-//        
-//        TreePrinter.print(arvoreAVL.raiz);
-//        
-        
         
         /**
-         * Criando tabelas com json
+         * Criando as outras tabelas com json
          */
         
         db.addTabela(new Tabela("{nome: 'datsrcln', campos:[], indices:['ndb_no','nutr_no','datasrc_id']}"));
@@ -79,7 +65,10 @@ public class IMDB {
         db.addTabela(new Tabela("{nome:'src_cd', campos:['srccd_desc'], indices:['src_cd']}"));
         db.addTabela(new Tabela("{nome:'weight', campos:['seq','amount','msre_desc','gm_wgt','num_data_pts','std_dev'], indices:['ndb_no']}"));
 
-    
+        /**
+         * Exemplo de como adicionar registro na tabela data_src 
+         */
+        
         /*
         Registro r1 = new Registro();
         r1.addIndice("D1066");
@@ -93,23 +82,14 @@ public class IMDB {
         r1.addValor("76");
         
         db.addRegistro("data_src", r1);
-        
+        */
 
         
-        Registro r2 = new Registro();
-        r2.addIndice("D1073");
-        r2.addValor("J.P. McBride, R.A. Maclead");
-        r2.addValor("Sodium and potassium in fish from the Canadian Pacific coast.");
-        r2.addValor("1956");
-        r2.addValor("Journal of the American Dietetic Association");
-        r2.addValor("32");
-        r2.addValor("");
-        r2.addValor("636");
-        r2.addValor("638");
+        /**
+         * Exemplo de como criar registro utilizando JSON
+        */
         
-        db.addRegistro("data_src", r2);
-        
-        
+        /*
         Registro r3 = new Registro("{"
                 + "indices:['D1073'], "
                 + "valores:["
@@ -124,11 +104,10 @@ public class IMDB {
                 + "}");
         */
 
-        /**
-         * TODO fazer leitura de arquivo contendo dados para carregamento
-         */
-        
+        System.out.println("Tabelas criadas:");
         System.out.println(db.toString());
+        
+        System.out.println("Iniciando leitura do arquivo usda.sql para inserção dos registros...");
 
         try (BufferedReader buffRead = new BufferedReader(new FileReader("usda.sql"))) {
             String linha = "";
@@ -179,9 +158,9 @@ public class IMDB {
                         
                         leitura = true;
                         
-                        System.out.println(linha);
+                        System.out.print("\nInserindo registros na tabela: "+nomeDaTabela);
+                        
                     }else if(linha.matches("\\\\.")){
-                        System.out.println(linha);
                         //termina leitura
                         leitura = false;
                         
@@ -190,7 +169,7 @@ public class IMDB {
                         leitura = false;
                         tabela = null;
                         
-                        
+                        System.out.println("\t................ OK");
                     }else if(leitura){
                         
                         //pega os valores
@@ -209,7 +188,7 @@ public class IMDB {
                         try{
                             tabela.add(r);
                         } catch (Exception e) {
-                            System.out.println("Fudeu");
+                            System.out.println("Problema ao adicionar registro");
                         }
                         
                         
@@ -228,18 +207,47 @@ public class IMDB {
             System.out.println(e.getMessage());
         }
 
+        String busca = "______                            \n" +
+                      "| ___ \\                         _ \n" +
+                      "| |_/ / _   _  ___   ___  __ _ (_)\n" +
+                      "| ___ \\| | | |/ __| / __|/ _` |   \n" +
+                      "| |_/ /| |_| |\\__ \\| (__| (_| | _ \n" +
+                      "\\____/  \\__,_||___/ \\___|\\__,_|(_)\n" +
+                      "                                  " ;
+        
+        System.out.println(busca);
+        
         Scanner leitor = new Scanner(System.in);
 
-        while (true) {            
-            System.out.print("Digite o nome da tabela do registro a ser buscado: ");
-            String nomeTabela = leitor.next();
-            System.out.print("Digite o indice do registro a ser buscado (caso o registro seja comporto por mais de um indice, separe-os por ';'): ");
-            String indicesDoRegistro = leitor.next();
-            
-            String registro = db.getTabela(nomeTabela).busca(indicesDoRegistro.split(";")).getJson();
-            System.out.println(registro);
-            
-        }
+//        while (true) {            
+//            System.out.print("Digite o nome da tabela do registro a ser buscado: ");
+//            Tabela tabela = null;
+//            while (tabela == null) {
+//                String nomeTabela = leitor.next();
+//                try {
+//                    tabela = db.getTabela(nomeTabela);
+//                } catch (Exception e) {
+//                    System.out.println("Tabela não encontrada, tente novamente.");
+//                }
+//            }
+//            
+//            System.out.print("Digite o indice do registro a ser buscado (caso o registro seja composto por mais de um indice, separe-os por ';'): ");
+//            Registro registro = null;
+//            while (registro == null) {                
+//                    String indicesDoRegistro = leitor.next();
+//                    registro = tabela.busca(indicesDoRegistro.split(";"));
+//                    if(registro == null) {
+//                        System.out.println("Registro não encontrada, tente novamente.");
+//                        TreePrinter.print(tabela.arvore.raiz);
+//                    }
+//            }
+//            
+//            
+//            
+//            System.out.println("O Registro buscado foi:");
+//            System.out.println(registro.getJson());
+//            
+//        }
         
         
     }

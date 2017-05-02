@@ -9,8 +9,8 @@ package imdb;
  *
  * @author felip
  */
-public class ArvoreAVL {
-     RegistroAVL raiz = null;
+public class ArvoreAVL extends ArvoreBinaria{
+     //RegistroAVL raiz = null;
      
      //Flag utilizada para indicar se altura da arvore aumentou
      private boolean aumento;
@@ -18,10 +18,20 @@ public class ArvoreAVL {
 
     public boolean add(RegistroAVL registro) {
         aumento = true;
-        raiz = add(this.raiz, registro);
+        raiz = add((RegistroAVL)this.raiz, registro);
         return retornoDaInclusao;
     }
 
+    public Registro busca(String... chave) {
+
+        Registro aux = new Registro();
+        for (String key : chave) {
+            aux.indices.add(key);
+        }
+
+        return busca(this.raiz, aux);
+    }
+    
     private RegistroAVL add(RegistroAVL raiz, RegistroAVL novo) {
         //se vazio 
         if (raiz == null) {
@@ -40,7 +50,7 @@ public class ArvoreAVL {
         
         //verifica se vai adicionar a esquerda
         if (raiz.comparaCom(novo) > 0) {
-            raiz.registroEsquerda = add(raiz.registroEsquerda, novo);
+            raiz.registroEsquerda = add((RegistroAVL)raiz.registroEsquerda, novo);
             //se aumentou autura da subarvore esquerda
             if(aumento){
                 diminuiEquilibrio(raiz);
@@ -52,7 +62,7 @@ public class ArvoreAVL {
             //rebalanceamento desnecessário
             return raiz;
         }else{
-            raiz.registroDireita = add(raiz.registroDireita, novo);
+            raiz.registroDireita = add((RegistroAVL)raiz.registroDireita, novo);
             //se aumentou autura da subarvore direita
             if(aumento){
                 aumentaEquilibrio(raiz);
@@ -67,11 +77,11 @@ public class ArvoreAVL {
     }
     
     private RegistroAVL reequilibraEsquerda(RegistroAVL raiz){
-        RegistroAVL filhoEsquerdo = raiz.registroEsquerda;
+        RegistroAVL filhoEsquerdo = (RegistroAVL)raiz.registroEsquerda;
         
         //Vê se esta mais pesado a esquerda-direita --> nesse caso será necessário rotação dupla
         if(filhoEsquerdo.equilibrio > RegistroAVL.BALANCEADO){
-            RegistroAVL filhoEsquerdoDireito = filhoEsquerdo.registroDireita;
+            RegistroAVL filhoEsquerdoDireito = (RegistroAVL)filhoEsquerdo.registroDireita;
             //Atualiza os equilibrios
             if(filhoEsquerdoDireito.equilibrio < RegistroAVL.BALANCEADO){
                 filhoEsquerdo.equilibrio = RegistroAVL.BALANCEADO;
@@ -93,11 +103,11 @@ public class ArvoreAVL {
     }
     
     private RegistroAVL reequilibraDireita(RegistroAVL raiz){
-        RegistroAVL filhoDireita = raiz.registroDireita;
+        RegistroAVL filhoDireita = (RegistroAVL)raiz.registroDireita;
         
         //Vê se esta mais pesado a direita-esquerda --> nesse caso será necessário rotação dupla
         if(filhoDireita.equilibrio < RegistroAVL.BALANCEADO){
-            RegistroAVL filhoDireitoEsquerdo = filhoDireita.registroEsquerda;
+            RegistroAVL filhoDireitoEsquerdo = (RegistroAVL)filhoDireita.registroEsquerda;
             //Atualiza os equilibrios
             if(filhoDireitoEsquerdo.equilibrio > RegistroAVL.BALANCEADO){
                 filhoDireita.equilibrio = RegistroAVL.BALANCEADO;
@@ -134,36 +144,8 @@ public class ArvoreAVL {
 
     /**
      * @TODO Fazer método de remoção da árvore
-     * @TODO Testar BUSCA
      */
-    public RegistroAVL busca(String... chave) {
 
-        RegistroAVL aux = new RegistroAVL();
-        for (String key : chave) {
-            aux.indices.add(key);
-        }
-
-        return busca(raiz, aux);
-    }
-
-    private RegistroAVL busca(RegistroAVL raiz, RegistroAVL registroAux) {
-        //se vazio 
-        if (raiz == null) {
-            return null;
-        } else {
-            int comparacao = raiz.comparaCom(registroAux);
-            if (comparacao == 0) {
-                return raiz;
-            } else if (comparacao < 0) {
-                //verifica se raiz tem elemento a direita
-                return busca(raiz.registroDireita, registroAux);
-            } else {
-                //se tem chama a busca novamente
-                return busca(raiz.registroEsquerda, registroAux);
-            }
-        }
-    }
-    
     /**
      * Transforma:...Em:........
      * .......9...........8.....
@@ -175,7 +157,7 @@ public class ArvoreAVL {
      */
     public RegistroAVL rotacaoSimplesDireita(RegistroAVL raiz){
         RegistroAVL no;
-        no = raiz.registroEsquerda;
+        no = (RegistroAVL)raiz.registroEsquerda;
         raiz.registroEsquerda = no.registroDireita;
         no.registroDireita = raiz;        
         return no;  
@@ -192,7 +174,7 @@ public class ArvoreAVL {
      */
     public RegistroAVL rotacaoSimplesEsquerda(RegistroAVL raiz){
         RegistroAVL no;
-        no = raiz.registroDireita;
+        no = (RegistroAVL)raiz.registroDireita;
         raiz.registroDireita = no.registroEsquerda;
         no.registroEsquerda = raiz;
                
@@ -209,7 +191,7 @@ public class ArvoreAVL {
      * @return  Nova Raiz      
      */
     public RegistroAVL rotacaoEsquerdaDireita(RegistroAVL raiz){
-        raiz.registroEsquerda = rotacaoSimplesEsquerda(raiz.registroEsquerda);
+        raiz.registroEsquerda = rotacaoSimplesEsquerda((RegistroAVL)raiz.registroEsquerda);
         return rotacaoSimplesDireita(raiz);  
     }
     
@@ -223,7 +205,7 @@ public class ArvoreAVL {
      * @return  Nova Raiz       
      */
     public RegistroAVL rotacaoDireitaEsquerda(RegistroAVL raiz){
-        raiz.registroDireita = rotacaoSimplesDireita(raiz.registroDireita);
+        raiz.registroDireita = rotacaoSimplesDireita((RegistroAVL)raiz.registroDireita);
         return rotacaoSimplesEsquerda(raiz);  
     }
 }

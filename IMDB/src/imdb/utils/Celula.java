@@ -5,6 +5,8 @@
  */
 package imdb.utils;
 
+import java.util.Objects;
+
 /**
  *
  * @author felip
@@ -39,4 +41,32 @@ public class Celula<O> {
         this.proxima = proxima;
     }
 
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Celula<?> other = (Celula<?>) obj;
+        if (!Objects.equals(this.valor, other.valor)) {
+            return false;
+        }
+        return true;
+    }
+
+    
+
+    
+    
 }

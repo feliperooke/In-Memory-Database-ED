@@ -16,11 +16,11 @@ import org.json.JSONObject;
  */
 public class Registro implements TreePrinter.PrintableNode{
     
-    Lista<String> indices;
-    Lista<String> valores;
+    protected Lista<String> indices;
+    protected Lista<String> valores;
         
-    Registro registroDireita;
-    Registro registroEsquerda;
+    public Registro registroDireita;
+    public Registro registroEsquerda;
 
     public Registro() {
         this.indices = new Lista<>();
@@ -52,7 +52,7 @@ public class Registro implements TreePrinter.PrintableNode{
             //caso seja igual ele vai para o próximo indice da lista
         }
         
-        //caso sejam todas as chaves iguais, considera que é maior
+        //caso sejam todas as chaves iguais
         return 0;
     }   
     

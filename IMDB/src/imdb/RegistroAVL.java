@@ -14,7 +14,7 @@ import org.json.JSONObject;
  *
  * @author felip
  */
-public class RegistroAVL extends Registro{
+public class RegistroAVL extends Registro implements TreePrinter.PrintableNode{
     
     public static final int PESO_ESQUERDA = -1;
     public static final int BALANCEADO = 0;
@@ -22,8 +22,8 @@ public class RegistroAVL extends Registro{
     
     public int equilibrio;
             
-    RegistroAVL registroDireita;
-    RegistroAVL registroEsquerda;
+    //RegistroAVL registroDireita;
+    //RegistroAVL registroEsquerda;
 
     public RegistroAVL() {
         this.indices = new Lista<>();

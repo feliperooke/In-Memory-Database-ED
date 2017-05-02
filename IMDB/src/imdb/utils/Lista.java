@@ -71,6 +71,23 @@ public class Lista<O>{
         return atual;
     }
     
+    public O get(O objeto) {
+        return getCelula(objeto).getValor();
+    }
+    
+    private Celula<O> getCelula(O valor) {
+        if(valor == null){
+            throw new IllegalArgumentException("Posição não existe");
+        }
+        
+        Celula<O> atual = primeira;
+        for (int i = 0; i < tamanho; i++) {
+          if(atual.getValor().equals(valor)) return atual;
+          atual = atual.getProxima();
+        }
+        return null;
+    }
+    
     
     
     private void removePrimeira(int posicao){

@@ -31,20 +31,29 @@ public class DataBase {
     }
     
     public Tabela getTabela(String nomeTabela){
-        for (int i = 0; i < this.tabelas.tamanho(); i++) {
+        /*for (int i = 0; i < this.tabelas.tamanho(); i++) {
             Tabela tabela = this.tabelas.get(i);
             if(tabela.getNome().equals(nomeTabela)){
                 return tabela;
             }
-        }
+        }*/
         
-        throw new IllegalArgumentException("Tabela não existe");
+        Tabela aux = new Tabela();
+        aux.setNome(nomeTabela);
+        
+        return this.tabelas.get(aux);
+        
+        //throw new IllegalArgumentException("Tabela não existe");
     }
     
     
     
     public void addRegistro(String nomeTabela, RegistroAVL registro){
         this.getTabela(nomeTabela).add(registro);
+    }
+    
+    public Registro getRegistro(String nomeTabela, String... indices) {
+        return getTabela(nomeTabela).busca(indices);
     }
     
    
