@@ -66,4 +66,69 @@ public class DataBase {
         
         return retorno + "]";
     }
+    
+    public Lista<RegistroAVL[]> join(Tabela tabelaComChavePrimaria, Tabela tabelaComChaveEstrangeira, String nomeChavePrimaria, String nomeChaveEstrangeira){
+        
+        //confirmar se tabelaComChavePrimaria não tem chave composta
+        if(tabelaComChavePrimaria.getIndices().tamanho()>1)
+            System.out.println("A tabela "+tabelaComChavePrimaria.getNome()+" apresenta chave composta");
+        
+        //confirmar se nomeChavePrimaria é a chave da primeira posição da tabela
+        if(!tabelaComChavePrimaria.getIndices().get(0).equals(nomeChavePrimaria)){ 
+            throw new IllegalArgumentException("O campo "+nomeChavePrimaria+" não é chave primária da tabela");
+        }
+        
+        //pega em qual posição está nomeChaveEstrangeira
+        int posicaoChaveEstrangeira = tabelaComChaveEstrangeira.getIndices().indexOf(nomeChaveEstrangeira);
+                
+        //faz percurso inordem em tabelaComChaveEstrangeira
+        //e pega o campo nomeChaveEstrangeira do nó e realiza busca na tabelaComChavePrimaria
+        Lista<RegistroAVL[]> uniao = new Lista<>();
+        
+        join((RegistroAVL)tabelaComChaveEstrangeira.arvore.raiz, uniao, tabelaComChavePrimaria, posicaoChaveEstrangeira);
+        
+        return uniao;
+    }
+    
+    private void join(RegistroAVL raizDaTabelaComChaveEstrangeira, Lista<RegistroAVL[]> uniao, Tabela tabelaComChavePrimaria, int posicaoDaChavePrimaria){
+        
+        if(raizDaTabelaComChaveEstrangeira == null) return;
+        
+        //pega o valor do indice para realizar busca na tabela com chave primária.
+        String chaveEstrangeira = raizDaTabelaComChaveEstrangeira.indices.get(posicaoDaChavePrimaria);
+
+        //busca na tabela
+        RegistroAVL noDaBusca = tabelaComChavePrimaria.busca(chaveEstrangeira);
+
+        if (noDaBusca == null) {
+            System.out.println("Nó da Busca: " + chaveEstrangeira + " é nulo.");
+        } else {
+            //adiciona o resultado na união
+            RegistroAVL[] tupla = new RegistroAVL[2];
+            tupla[0] = noDaBusca;
+            tupla[1] = raizDaTabelaComChaveEstrangeira;
+
+            uniao.add(tupla);
+        }
+        
+        join((RegistroAVL) raizDaTabelaComChaveEstrangeira.registroEsquerda, uniao, tabelaComChavePrimaria, posicaoDaChavePrimaria);
+        join((RegistroAVL) raizDaTabelaComChaveEstrangeira.registroDireita, uniao, tabelaComChavePrimaria, posicaoDaChavePrimaria);
+        
+    }
+    
+    public Lista<RegistroAVL[]> select(Tabela tabela, String[]... restricao){
+        
+        //identifica a posição dos campos da restrição e cria uma matriz de mapeamento
+        for (String[] campoOperadorRestricao : restricao) {
+            campoOperadorRestricao[0] = Integer.toString(tabela.getIndices().indexOf(campoOperadorRestricao[0])); 
+        }
+        
+        //Faz percurso inordem e para cada registro, verifica se todas as condições são atendidas.
+        
+        return null;
+    }
+    
+    
+    
+    
 }

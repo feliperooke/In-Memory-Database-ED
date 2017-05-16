@@ -6,6 +6,7 @@
  */
 package imdb;
 
+import imdb.utils.Lista;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
@@ -247,8 +248,11 @@ public class IMDB {
             System.out.println("O Registro buscado foi:");
             System.out.println(registro.getJson());
             
+            Lista<RegistroAVL[]> uniao = db.join(db.getTabela("data_src"), db.getTabela("datsrcln"), "datasrc_id", "datasrc_id");
+            
         }
         
+                
         
     }
     
