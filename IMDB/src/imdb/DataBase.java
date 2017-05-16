@@ -116,17 +116,61 @@ public class DataBase {
         
     }
     
-    public Lista<RegistroAVL[]> select(Tabela tabela, String[]... restricao){
+    public Lista<RegistroAVL> select(Tabela tabela, String[]... restricao){
+        
+        String[][] matriz = new String[restricao.length][restricao[0].length+1];
         
         //identifica a posição dos campos da restrição e cria uma matriz de mapeamento
-        for (String[] campoOperadorRestricao : restricao) {
-            campoOperadorRestricao[0] = Integer.toString(tabela.getIndices().indexOf(campoOperadorRestricao[0])); 
+        for (int i = 0; i < restricao.length; i++) {
+            //verifica se é índice ou campo
+            int indice = tabela.getIndices().indexOf(restricao[i][0]);
+            //se é indice
+            if(indice != -1){
+                matriz[i][0] = Integer.toString(indice);
+                matriz[i][1] = restricao[i][1];
+                matriz[i][2] = "i";
+            }else{
+                matriz[i][0] = Integer.toString(tabela.getCampos().indexOf(restricao[i][0]));
+                matriz[i][1] = restricao[i][1];
+                matriz[i][2] = "c";
+            }
         }
         
-        //Faz percurso inordem e para cada registro, verifica se todas as condições são atendidas.
+        Lista<RegistroAVL> select = new Lista<>();
         
-        return null;
+        //Faz percurso inordem e para cada registro, verifica se todas as condições são atendidas.
+        select((RegistroAVL) tabela.arvore.raiz, select, matriz);
+        
+        return select;
     }
+    
+    private void select(RegistroAVL raiz, Lista<RegistroAVL> resultado, String[][] restricao){
+        if(raiz == null) return;
+        
+        boolean adiciona = true;
+        
+        for (String[] campoRestricaoTipo : restricao) {
+            
+            if (campoRestricaoTipo[2].equals("i")) {
+                if (!raiz.indices.get(campoRestricaoTipo[0]).equals(campoRestricaoTipo[1])) {
+                    adiciona = false;
+                    break;
+                }
+            } else {
+                if (!raiz.valores.get(campoRestricaoTipo[0]).equals(campoRestricaoTipo[1])) {
+                    adiciona = false;
+                    break;
+                }
+            }
+        }
+        
+        if(adiciona) resultado.add(raiz);
+        
+        select((RegistroAVL)raiz.registroEsquerda, resultado, restricao);
+        select((RegistroAVL)raiz.registroDireita, resultado, restricao);
+        
+    }
+    
     
     
     
