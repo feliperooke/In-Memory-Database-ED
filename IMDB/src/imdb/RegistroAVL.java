@@ -39,4 +39,17 @@ public class RegistroAVL extends Registro implements TreePrinter.PrintableNode{
         this.setJson(json);
     }
     
+    @Override
+    public RegistroAVL clone(){
+        
+        RegistroAVL registroAVL = new RegistroAVL();
+        
+        registroAVL.indices = this.indices.clone();
+        registroAVL.valores = this.valores.clone();
+        registroAVL.equilibrio = BALANCEADO;
+        
+        return registroAVL;
+    }
+    
+    
 }

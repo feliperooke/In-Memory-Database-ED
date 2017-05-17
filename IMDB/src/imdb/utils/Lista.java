@@ -182,6 +182,18 @@ public class Lista<O>{
         return builder.toString();
     }
 
-    
+    @Override
+    public Lista<O> clone() {
+        
+        Lista<O> lista = new Lista<>();
+        
+        Celula<O> atual = primeira;
+        for (int i = 0; i < this.tamanho; i++) {
+            lista.add(atual.getValor());
+            atual = atual.getProxima();
+        }        
+        
+        return lista;
+    }
     
 }

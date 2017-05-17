@@ -42,9 +42,25 @@ public class Registro implements TreePrinter.PrintableNode{
         this.valores.add(valor);
     }
     
+    public String getIndice(int posicao){
+        return this.indices.get(posicao);
+    }
+    
+    public String getValor(int posicao){
+        return this.valores.get(posicao);
+    }
+    
+    public void setIndice(int posicao, String valor){
+        this.indices.substitui(posicao,valor);
+    }
+    
+    public void setValor(int posicao, String valor){
+        this.valores.substitui(posicao,valor);
+    }
+    
     public int comparaCom(Registro noParaComparacao){
         
-        for (int i = 0; i < this.indices.tamanho(); i++) {
+        for (int i = 0; i < Math.min(this.indices.tamanho(), noParaComparacao.indices.tamanho()); i++) {
             //o String.compareTo compara caracter a caracter e seu pior caso é o tamanho da menor string
             int comparacao = this.indices.get(i).compareTo(noParaComparacao.indices.get(i));
             if( comparacao < 0) return -1;
@@ -106,4 +122,5 @@ public class Registro implements TreePrinter.PrintableNode{
     public String getText() {
         return indices.get(0);
     }
+    
 }

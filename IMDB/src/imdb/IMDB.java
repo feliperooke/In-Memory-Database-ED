@@ -221,34 +221,56 @@ public class IMDB {
         Scanner leitor = new Scanner(System.in);
 
         while (true) {            
-            System.out.print("Digite o nome da tabela do registro a ser buscado: ");
-            Tabela tabela = null;
-            while (tabela == null) {
-                String nomeTabela = leitor.next();
-                try {
-                    tabela = db.getTabela(nomeTabela);
-                } catch (Exception e) {
-                    System.out.println("Tabela não encontrada, tente novamente.");
-                }
+//            System.out.print("Digite o nome da tabela do registro a ser buscado: ");
+//            Tabela tabela = null;
+//            while (tabela == null) {
+//                String nomeTabela = leitor.next();
+//                try {
+//                    tabela = db.getTabela(nomeTabela);
+//                } catch (Exception e) {
+//                    System.out.println("Tabela não encontrada, tente novamente.");
+//                }
+//            }
+//            
+//            System.out.print("Digite o indice do registro a ser buscado (caso o registro seja composto por mais de um indice, separe-os por ';'): ");
+//            Registro registro = null;
+//            while (registro == null) {                
+//                    String indicesDoRegistro = leitor.next();
+//                    registro = tabela.busca(indicesDoRegistro.split(";"));
+//                    if(registro == null) {
+//                        System.out.println("Registro não encontrada, tente novamente.");
+//                        TreePrinter.print(tabela.arvore.raiz);
+//                    }
+//            }
+//            
+//            
+//            
+//            System.out.println("O Registro buscado foi:");
+//            System.out.println(registro.getJson());
+//            
+            //Lista<RegistroAVL[]> uniao = db.rightOuterJoin(db.getTabela("fd_group"), db.getTabela("food_des"), "fdgrp_cd", "fdgrp_cd");
+            Lista<RegistroAVL[]> uniao = db.leftOuterJoin(db.getTabela("fd_group"), db.getTabela("food_des"), "fdgrp_cd", "fdgrp_cd");
+            
+            //String[] restricao1 = {"year","1980"};
+            //String[] restricao2 = {"vol_city","65"};
+            
+            //Lista<RegistroAVL> select = db.select(db.getTabela("data_src"), restricao1);
+
+//            for (int i = 0; i < select.tamanho(); i++) {
+//                System.out.println(select.get(i).getJson());
+//            }
+//            
+            for (int i = 0; i < uniao.tamanho(); i++) {
+                String primeiro = "null";
+                String segundo = "null";
+                if(uniao.get(i)[0] != null)
+                    primeiro = uniao.get(i)[0].getJson();
+                if(uniao.get(i)[1] != null)
+                    segundo = uniao.get(i)[1].getJson();
+                System.out.println(primeiro+"--->"+segundo);
             }
-            
-            System.out.print("Digite o indice do registro a ser buscado (caso o registro seja composto por mais de um indice, separe-os por ';'): ");
-            Registro registro = null;
-            while (registro == null) {                
-                    String indicesDoRegistro = leitor.next();
-                    registro = tabela.busca(indicesDoRegistro.split(";"));
-                    if(registro == null) {
-                        System.out.println("Registro não encontrada, tente novamente.");
-                        TreePrinter.print(tabela.arvore.raiz);
-                    }
-            }
-            
-            
-            
-            System.out.println("O Registro buscado foi:");
-            System.out.println(registro.getJson());
-            
-            Lista<RegistroAVL[]> uniao = db.join(db.getTabela("data_src"), db.getTabela("datsrcln"), "datasrc_id", "datasrc_id");
+//            
+            break;
             
         }
         

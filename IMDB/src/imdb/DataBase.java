@@ -67,7 +67,7 @@ public class DataBase {
         return retorno + "]";
     }
     
-    public Lista<RegistroAVL[]> join(Tabela tabelaComChavePrimaria, Tabela tabelaComChaveEstrangeira, String nomeChavePrimaria, String nomeChaveEstrangeira){
+    public Lista<RegistroAVL[]> innerJoin(Tabela tabelaComChavePrimaria, Tabela tabelaComChaveEstrangeira, String nomeChavePrimaria, String nomeChaveEstrangeira){
         
         //confirmar se tabelaComChavePrimaria não tem chave composta
         if(tabelaComChavePrimaria.getIndices().tamanho()>1)
@@ -85,12 +85,12 @@ public class DataBase {
         //e pega o campo nomeChaveEstrangeira do nó e realiza busca na tabelaComChavePrimaria
         Lista<RegistroAVL[]> uniao = new Lista<>();
         
-        join((RegistroAVL)tabelaComChaveEstrangeira.arvore.raiz, uniao, tabelaComChavePrimaria, posicaoChaveEstrangeira);
+        innerJoin((RegistroAVL)tabelaComChaveEstrangeira.arvore.raiz, uniao, tabelaComChavePrimaria, posicaoChaveEstrangeira);
         
         return uniao;
     }
     
-    private void join(RegistroAVL raizDaTabelaComChaveEstrangeira, Lista<RegistroAVL[]> uniao, Tabela tabelaComChavePrimaria, int posicaoDaChavePrimaria){
+    private void innerJoin(RegistroAVL raizDaTabelaComChaveEstrangeira, Lista<RegistroAVL[]> uniao, Tabela tabelaComChavePrimaria, int posicaoDaChavePrimaria){
         
         if(raizDaTabelaComChaveEstrangeira == null) return;
         
@@ -111,9 +111,136 @@ public class DataBase {
             uniao.add(tupla);
         }
         
-        join((RegistroAVL) raizDaTabelaComChaveEstrangeira.registroEsquerda, uniao, tabelaComChavePrimaria, posicaoDaChavePrimaria);
-        join((RegistroAVL) raizDaTabelaComChaveEstrangeira.registroDireita, uniao, tabelaComChavePrimaria, posicaoDaChavePrimaria);
+        innerJoin((RegistroAVL) raizDaTabelaComChaveEstrangeira.registroEsquerda, uniao, tabelaComChavePrimaria, posicaoDaChavePrimaria);
+        innerJoin((RegistroAVL) raizDaTabelaComChaveEstrangeira.registroDireita, uniao, tabelaComChavePrimaria, posicaoDaChavePrimaria);
         
+    }
+   
+    public Lista<RegistroAVL[]> rightOuterJoin(Tabela tabelaComChavePrimaria, Tabela tabelaComChaveEstrangeira, String nomeChavePrimaria, String nomeChaveEstrangeira){
+        
+        //confirmar se tabelaComChavePrimaria não tem chave composta
+        if(tabelaComChavePrimaria.getIndices().tamanho()>1)
+            System.out.println("A tabela "+tabelaComChavePrimaria.getNome()+" apresenta chave composta");
+        
+        //confirmar se nomeChavePrimaria é a chave da primeira posição da tabela
+        if(!tabelaComChavePrimaria.getIndices().get(0).equals(nomeChavePrimaria)){ 
+            throw new IllegalArgumentException("O campo "+nomeChavePrimaria+" não é chave primária da tabela");
+        }
+        
+        //pega em qual posição está nomeChaveEstrangeira
+        int posicaoChaveEstrangeira = tabelaComChaveEstrangeira.getIndices().indexOf(nomeChaveEstrangeira);
+                
+        //faz percurso inordem em tabelaComChaveEstrangeira
+        //e pega o campo nomeChaveEstrangeira do nó e realiza busca na tabelaComChavePrimaria
+        Lista<RegistroAVL[]> uniao = new Lista<>();
+        
+        rightOuterJoin((RegistroAVL)tabelaComChaveEstrangeira.arvore.raiz, uniao, tabelaComChavePrimaria, posicaoChaveEstrangeira);
+        
+        return uniao;
+    }
+    
+    private void rightOuterJoin(RegistroAVL raizDaTabelaComChaveEstrangeira, Lista<RegistroAVL[]> uniao, Tabela tabelaComChavePrimaria, int posicaoDaChavePrimaria){
+        
+        if(raizDaTabelaComChaveEstrangeira == null) return;
+        
+        //pega o valor do indice para realizar busca na tabela com chave primária.
+        String chaveEstrangeira = raizDaTabelaComChaveEstrangeira.indices.get(posicaoDaChavePrimaria);
+
+        //busca na tabela
+        RegistroAVL noDaBusca = tabelaComChavePrimaria.busca(chaveEstrangeira);
+
+        //adiciona o resultado na união
+        RegistroAVL[] tupla = new RegistroAVL[2];
+        tupla[0] = noDaBusca;
+        tupla[1] = raizDaTabelaComChaveEstrangeira;
+
+        uniao.add(tupla);
+
+        
+        rightOuterJoin((RegistroAVL) raizDaTabelaComChaveEstrangeira.registroEsquerda, uniao, tabelaComChavePrimaria, posicaoDaChavePrimaria);
+        rightOuterJoin((RegistroAVL) raizDaTabelaComChaveEstrangeira.registroDireita, uniao, tabelaComChavePrimaria, posicaoDaChavePrimaria);
+        
+    }
+    
+    public Lista<RegistroAVL[]> leftOuterJoin(Tabela tabelaComChavePrimaria, Tabela tabelaComChaveEstrangeira, String nomeChavePrimaria, String nomeChaveEstrangeira){
+        
+        
+        //confirmar se nomeChavePrimaria é a chave da primeira posição da tabela
+        if(!tabelaComChavePrimaria.getIndices().get(0).equals(nomeChavePrimaria)){ 
+            throw new IllegalArgumentException("O campo "+nomeChavePrimaria+" não é chave primária da tabela");
+        }
+        
+        //pega em qual posição está nomeChavePrimaria
+        int posicaoChavePrimaria = tabelaComChavePrimaria.getIndices().indexOf(nomeChavePrimaria);
+                
+        //pega em qual posição está nomeChaveEstrangeira
+        int posicaoChaveEstrangeira = tabelaComChaveEstrangeira.getIndices().indexOf(nomeChaveEstrangeira);
+        
+        
+        //reindexa tabelaComChaveEstrangeira com base na chave primária da tabelaComChavePrimaria
+        ArvoreAVL arvoreReindexada = new ArvoreAVL();
+        reindexa(arvoreReindexada, (RegistroAVL)tabelaComChaveEstrangeira.arvore.raiz, posicaoChaveEstrangeira);
+        
+        //faz percurso inordem em tabelaComChavePrimaria
+        //e pega o campo nomeChavePrimaria do nó e realiza busca na arvoreReindexada
+        Lista<RegistroAVL[]> uniao = new Lista<>();
+        
+        leftOuterJoin((RegistroAVL)tabelaComChavePrimaria.arvore.raiz, uniao, arvoreReindexada, posicaoChaveEstrangeira);
+        
+        return uniao;
+    }
+    
+    private void leftOuterJoin(RegistroAVL raizDaTabelaComChavePrimaria, Lista<RegistroAVL[]> uniao, ArvoreAVL arvoreReindexada, int posicaoChaveEstrangeira){
+        
+        if(raizDaTabelaComChavePrimaria == null) return;
+        
+        //pega o valor do indice para realizar busca na tabela com chave primária.
+        String chavePrimária = raizDaTabelaComChavePrimaria.indices.get(0);
+
+        //busca na tabela
+        RegistroAVL noDaBusca = (RegistroAVL) arvoreReindexada.busca(chavePrimária);
+        
+        RegistroAVL noCopia = null;
+        
+        if( noDaBusca != null){
+            noCopia = noDaBusca.clone();
+            //troca os indices
+            String indiceInicial = noCopia.getIndice(0);
+            noCopia.setIndice(0, noCopia.getIndice(posicaoChaveEstrangeira));
+            noCopia.setIndice(posicaoChaveEstrangeira, indiceInicial);
+        }
+        
+        
+        //adiciona o resultado na união
+        RegistroAVL[] tupla = new RegistroAVL[2];
+        tupla[0] = raizDaTabelaComChavePrimaria;
+        tupla[1] = noCopia;
+
+        uniao.add(tupla);
+
+        
+        leftOuterJoin((RegistroAVL) raizDaTabelaComChavePrimaria.registroEsquerda, uniao, arvoreReindexada, posicaoChaveEstrangeira);
+        leftOuterJoin((RegistroAVL) raizDaTabelaComChavePrimaria.registroDireita, uniao, arvoreReindexada, posicaoChaveEstrangeira);
+        
+    }
+    
+    private void reindexa(ArvoreAVL arvoreAVL, RegistroAVL raiz, int posicaoChaveEstrangeira){
+        
+        if(raiz == null) return;
+        
+        //clona o nó
+        RegistroAVL novoNo = raiz.clone();
+        
+        //troca os indices
+        String indiceInicial = novoNo.getIndice(0);
+        novoNo.setIndice(0, novoNo.getIndice(posicaoChaveEstrangeira));
+        novoNo.setIndice(posicaoChaveEstrangeira, indiceInicial);
+        
+        //insere na arvore reindexada
+        arvoreAVL.add(novoNo);
+        
+        reindexa(arvoreAVL, (RegistroAVL) raiz.registroEsquerda, posicaoChaveEstrangeira);
+        reindexa(arvoreAVL, (RegistroAVL) raiz.registroDireita, posicaoChaveEstrangeira);
     }
     
     public Lista<RegistroAVL> select(Tabela tabela, String[]... restricao){
@@ -152,12 +279,12 @@ public class DataBase {
         for (String[] campoRestricaoTipo : restricao) {
             
             if (campoRestricaoTipo[2].equals("i")) {
-                if (!raiz.indices.get(campoRestricaoTipo[0]).equals(campoRestricaoTipo[1])) {
+                if (!raiz.getIndice(Integer.parseInt(campoRestricaoTipo[0])).equals(campoRestricaoTipo[1])) {
                     adiciona = false;
                     break;
                 }
             } else {
-                if (!raiz.valores.get(campoRestricaoTipo[0]).equals(campoRestricaoTipo[1])) {
+                if (!raiz.getValor(Integer.parseInt(campoRestricaoTipo[0])).equals(campoRestricaoTipo[1])) {
                     adiciona = false;
                     break;
                 }
