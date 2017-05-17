@@ -112,5 +112,16 @@ public class ArvoreBinaria{
             }
         }
     }
+    
+    protected Registro buscaMaiorFilho(Registro raiz) {
+        
+        if (raiz.registroDireita.registroDireita == null) {
+            E returnValue = raiz.registroDireita.data;
+            raiz.registroDireita = raiz.registroDireita.registroDireita;
+            return returnValue;
+        } else {
+            return buscaMaiorFilho(raiz.registroDireita);
+        }
+    }
 
 }

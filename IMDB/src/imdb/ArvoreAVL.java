@@ -14,7 +14,9 @@ public class ArvoreAVL extends ArvoreBinaria{
      
      //Flag utilizada para indicar se altura da arvore aumentou
      private boolean aumento;
+     private boolean diminui;
      private boolean retornoDaInclusao;
+     private boolean retornoDaDelecao;
 
     public boolean add(RegistroAVL registro) {
         aumento = true;
@@ -142,9 +144,93 @@ public class ArvoreAVL extends ArvoreBinaria{
         }
     }
 
+    
     /**
      * @TODO Fazer método de remoção da árvore
      */
+    public boolean remove(String... chave){
+        
+        diminui = false;
+        retornoDaDelecao = false;
+        
+        RegistroAVL aux = new RegistroAVL();
+        for (String key : chave) {
+            aux.indices.add(key);
+        }
+
+        this.raiz = remove((RegistroAVL)this.raiz, aux);
+        
+        return retornoDaDelecao;
+    }
+    
+    public RegistroAVL remove(RegistroAVL atual, RegistroAVL buscado) {
+        if (atual == null) {
+            retornoDaDelecao = false;
+            return null;
+
+        } else {
+            
+            int comparacao = buscado.comparaCom(atual);
+            
+            if (comparacao < 0) {
+                atual.registroEsquerda = remove((RegistroAVL) atual.registroEsquerda, buscado);
+                if(diminui){
+                    aumentaEquilibrio(atual);
+                    if(atual.equilibrio > RegistroAVL.PESO_DIREITA){
+                        return reequilibraDireita(atual);
+                    }
+                }
+                return atual;
+            } else if (comparacao > 0) {
+                atual.registroDireita = remove((RegistroAVL) atual.registroDireita, buscado);
+                if(diminui){
+                    diminuiEquilibrio(atual);
+                    if(atual.equilibrio < RegistroAVL.PESO_ESQUERDA){
+                        return reequilibraEsquerda(atual);
+                    }
+                }
+                return atual;
+
+            } else if (comparacao == 0) {
+                
+                retornoDaDelecao = true;
+                diminui = true;
+                
+                //se não tem registro a esquerda, retorna o registro a direita
+                if(atual.registroEsquerda == null){
+                    return (RegistroAVL) atual.registroDireita;
+                    
+                //se não tem registro a direita, retorna o registro a esquerda
+                }else if(atual.registroDireita == null){
+                    return (RegistroAVL) atual.registroEsquerda;
+                
+                //se tem os dois filhos pego o filho mais a direita da subarvore esquerda
+                }else{
+                    
+                    //se o filho esquerdo não tem filho direito, copia o esquerdo pra cima.
+                    if(atual.registroEsquerda.registroDireita == null){
+                        atual.setIndices(atual.registroEsquerda.getIndices());
+                        atual.setValores(atual.registroEsquerda.getValores());
+                        
+                        atual.registroEsquerda.setIndices(atual.registroEsquerda.registroEsquerda.getIndices());
+                        atual.registroEsquerda.setValores(atual.registroEsquerda.registroEsquerda.getValores());
+                        
+                        aumentaEquilibrio(atual);
+                        if(atual.equilibrio > RegistroAVL.PESO_DIREITA){
+                            reequilibraDireita(atual);
+                        }
+                        
+                        return atual;
+                    
+                    } else {
+                        
+                    }
+                }
+                
+            }
+        }
+    }
+    
 
     /**
      * Transforma:...Em:........

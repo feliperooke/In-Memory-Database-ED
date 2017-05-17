@@ -50,6 +50,14 @@ public class Registro implements TreePrinter.PrintableNode{
         return this.valores.get(posicao);
     }
     
+    public Lista<String> getIndices(){
+        return this.indices;
+    }
+    
+    public Lista<String> getValores(){
+        return this.valores;
+    }
+    
     public void setIndice(int posicao, String valor){
         this.indices.substitui(posicao,valor);
     }
@@ -57,6 +65,16 @@ public class Registro implements TreePrinter.PrintableNode{
     public void setValor(int posicao, String valor){
         this.valores.substitui(posicao,valor);
     }
+
+    public void setIndices(Lista<String> valor){
+        this.indices = valor;
+    }
+    
+    public void setValores(Lista<String> valor){
+        this.valores = valor;
+    }
+    
+    
     
     public int comparaCom(Registro noParaComparacao){
         
