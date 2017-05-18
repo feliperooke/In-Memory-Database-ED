@@ -89,9 +89,12 @@ public class ArvoreAVL extends ArvoreBinaria{
                 filhoEsquerdo.equilibrio = RegistroAVL.BALANCEADO;
                 filhoEsquerdoDireito.equilibrio = RegistroAVL.BALANCEADO;
                 raiz.equilibrio = RegistroAVL.PESO_DIREITA;
-            }else{
+            }else if(filhoEsquerdoDireito.equilibrio > RegistroAVL.BALANCEADO){
                 filhoEsquerdo.equilibrio = RegistroAVL.PESO_ESQUERDA;
                 filhoEsquerdoDireito.equilibrio = RegistroAVL.BALANCEADO;
+                raiz.equilibrio = RegistroAVL.BALANCEADO;
+            }else{
+                filhoEsquerdo.equilibrio = RegistroAVL.BALANCEADO;
                 raiz.equilibrio = RegistroAVL.BALANCEADO;
             }
             //efetua rotação
@@ -115,9 +118,12 @@ public class ArvoreAVL extends ArvoreBinaria{
                 filhoDireita.equilibrio = RegistroAVL.BALANCEADO;
                 filhoDireitoEsquerdo.equilibrio = RegistroAVL.BALANCEADO;
                 raiz.equilibrio = RegistroAVL.PESO_ESQUERDA;
-            }else{
-                filhoDireita.equilibrio = RegistroAVL.PESO_DIREITA;
+            }else if(filhoDireitoEsquerdo.equilibrio < RegistroAVL.BALANCEADO){
+                filhoDireita.equilibrio = RegistroAVL.BALANCEADO;
                 filhoDireitoEsquerdo.equilibrio = RegistroAVL.BALANCEADO;
+                raiz.equilibrio = RegistroAVL.PESO_DIREITA;
+            }else{
+                filhoDireita.equilibrio = RegistroAVL.BALANCEADO;
                 raiz.equilibrio = RegistroAVL.BALANCEADO;
             }
             //efetua rotação
@@ -134,6 +140,8 @@ public class ArvoreAVL extends ArvoreBinaria{
         raiz.equilibrio--;
         if(raiz.equilibrio == RegistroAVL.BALANCEADO){
             aumento = false;
+        }else if(raiz.equilibrio == RegistroAVL.PESO_ESQUERDA||raiz.equilibrio == RegistroAVL.PESO_DIREITA){
+            diminui = false;
         }
     }
     
@@ -141,6 +149,8 @@ public class ArvoreAVL extends ArvoreBinaria{
         raiz.equilibrio++;
         if(raiz.equilibrio == RegistroAVL.BALANCEADO){
             aumento = false;
+        }else if(raiz.equilibrio == RegistroAVL.PESO_ESQUERDA||raiz.equilibrio == RegistroAVL.PESO_DIREITA){
+            diminui = false;
         }
     }
 
@@ -167,66 +177,72 @@ public class ArvoreAVL extends ArvoreBinaria{
         if (atual == null) {
             retornoDaDelecao = false;
             return null;
+        }
+        
+        int comparacao = buscado.comparaCom(atual);
+        if (comparacao < 0) {
+            atual.registroEsquerda = remove((RegistroAVL) atual.registroEsquerda, buscado);
+            if (diminui) {
+                aumentaEquilibrio(atual);
+                if (atual.equilibrio > RegistroAVL.PESO_DIREITA) {
+                    return reequilibraDireita(atual);
+                }
+            }
+            return atual;
+        } else if (comparacao > 0) {
+            atual.registroDireita = remove((RegistroAVL) atual.registroDireita, buscado);
+            if (diminui) {
+                diminuiEquilibrio(atual);
+                if (atual.equilibrio < RegistroAVL.PESO_ESQUERDA) {
+                    return reequilibraEsquerda(atual);
+                }
+            }
+            return atual;
 
         } else {
-            
-            int comparacao = buscado.comparaCom(atual);
-            
-            if (comparacao < 0) {
-                atual.registroEsquerda = remove((RegistroAVL) atual.registroEsquerda, buscado);
-                if(diminui){
+
+            retornoDaDelecao = true;
+            diminui = true;
+
+            //se não tem registro a esquerda, retorna o registro a direita
+            if (atual.registroEsquerda == null) {
+                return (RegistroAVL) atual.registroDireita;
+
+                //se não tem registro a direita, retorna o registro a esquerda
+            } else if (atual.registroDireita == null) {
+                return (RegistroAVL) atual.registroEsquerda;
+
+                //se tem os dois filhos pego o filho mais a direita da subarvore esquerda
+            } else {
+                //se o filho esquerdo não tem filho direito, copia o esquerdo pra cima.
+                if (atual.registroEsquerda.registroDireita == null) {
+                    atual.setIndices(atual.registroEsquerda.getIndices());
+                    atual.setValores(atual.registroEsquerda.getValores());
+
+                    atual.registroEsquerda = atual.registroEsquerda.registroEsquerda;
+
                     aumentaEquilibrio(atual);
-                    if(atual.equilibrio > RegistroAVL.PESO_DIREITA){
-                        return reequilibraDireita(atual);
+                    if (atual.equilibrio > RegistroAVL.PESO_DIREITA) {
+                        reequilibraDireita(atual);
                     }
-                }
-                return atual;
-            } else if (comparacao > 0) {
-                atual.registroDireita = remove((RegistroAVL) atual.registroDireita, buscado);
-                if(diminui){
+
+                    return atual;
+
+                } else {
+                    //removo o filho mais a direita da subarvore esquerda e copio seu valor para o atual
+                    RegistroAVL noRemovido = (RegistroAVL) buscaERemoveMaiorFilho(atual.registroEsquerda);
+
+                    atual.setIndices(noRemovido.getIndices());
+                    atual.setValores(noRemovido.getValores());
+
                     diminuiEquilibrio(atual);
-                    if(atual.equilibrio < RegistroAVL.PESO_ESQUERDA){
+                    if (atual.equilibrio < RegistroAVL.PESO_ESQUERDA) {
                         return reequilibraEsquerda(atual);
                     }
-                }
-                return atual;
 
-            } else if (comparacao == 0) {
-                
-                retornoDaDelecao = true;
-                diminui = true;
-                
-                //se não tem registro a esquerda, retorna o registro a direita
-                if(atual.registroEsquerda == null){
-                    return (RegistroAVL) atual.registroDireita;
-                    
-                //se não tem registro a direita, retorna o registro a esquerda
-                }else if(atual.registroDireita == null){
-                    return (RegistroAVL) atual.registroEsquerda;
-                
-                //se tem os dois filhos pego o filho mais a direita da subarvore esquerda
-                }else{
-                    
-                    //se o filho esquerdo não tem filho direito, copia o esquerdo pra cima.
-                    if(atual.registroEsquerda.registroDireita == null){
-                        atual.setIndices(atual.registroEsquerda.getIndices());
-                        atual.setValores(atual.registroEsquerda.getValores());
-                        
-                        atual.registroEsquerda.setIndices(atual.registroEsquerda.registroEsquerda.getIndices());
-                        atual.registroEsquerda.setValores(atual.registroEsquerda.registroEsquerda.getValores());
-                        
-                        aumentaEquilibrio(atual);
-                        if(atual.equilibrio > RegistroAVL.PESO_DIREITA){
-                            reequilibraDireita(atual);
-                        }
-                        
-                        return atual;
-                    
-                    } else {
-                        
-                    }
+                    return atual;
+
                 }
-                
             }
         }
     }

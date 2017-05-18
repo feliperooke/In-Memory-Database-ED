@@ -26,6 +26,27 @@ public class IMDB {
         Inspiração http://lokijs.org/#/
         */
         
+        
+        ArvoreAVL arvoreAVL = new ArvoreAVL();
+        
+        for (int i = 0; i < 10; i++) {
+            RegistroAVL registroAVL = new RegistroAVL();
+            registroAVL.addIndice(Integer.toString(i));
+            
+            arvoreAVL.add(registroAVL);
+        }
+        
+        arvoreAVL.remove("5");
+        arvoreAVL.remove("4");
+        arvoreAVL.remove("3");
+        arvoreAVL.remove("2");
+        
+        TreePrinter.print(arvoreAVL.raiz);
+        
+        
+        
+        
+        
         DataBase db = new DataBase();
         
         System.out.println("Iniciando criação das tabelas...");
@@ -249,7 +270,7 @@ public class IMDB {
 //            System.out.println(registro.getJson());
 //            
             //Lista<RegistroAVL[]> uniao = db.rightOuterJoin(db.getTabela("fd_group"), db.getTabela("food_des"), "fdgrp_cd", "fdgrp_cd");
-            Lista<RegistroAVL[]> uniao = db.leftOuterJoin(db.getTabela("fd_group"), db.getTabela("food_des"), "fdgrp_cd", "fdgrp_cd");
+            //Lista<RegistroAVL[]> uniao = db.leftOuterJoin(db.getTabela("fd_group"), db.getTabela("food_des"), "fdgrp_cd", "fdgrp_cd");
             
             //String[] restricao1 = {"year","1980"};
             //String[] restricao2 = {"vol_city","65"};
@@ -260,15 +281,15 @@ public class IMDB {
 //                System.out.println(select.get(i).getJson());
 //            }
 //            
-            for (int i = 0; i < uniao.tamanho(); i++) {
-                String primeiro = "null";
-                String segundo = "null";
-                if(uniao.get(i)[0] != null)
-                    primeiro = uniao.get(i)[0].getJson();
-                if(uniao.get(i)[1] != null)
-                    segundo = uniao.get(i)[1].getJson();
-                System.out.println(primeiro+"--->"+segundo);
-            }
+//            for (int i = 0; i < uniao.tamanho(); i++) {
+//                String primeiro = "null";
+//                String segundo = "null";
+//                if(uniao.get(i)[0] != null)
+//                    primeiro = uniao.get(i)[0].getJson();
+//                if(uniao.get(i)[1] != null)
+//                    segundo = uniao.get(i)[1].getJson();
+//                System.out.println(primeiro+"--->"+segundo);
+//            }
 //            
             break;
             
