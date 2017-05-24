@@ -21,6 +21,7 @@ public class RegistroAVL extends Registro implements TreePrinter.PrintableNode{
     public static final int PESO_DIREITA = 1;
     
     public int equilibrio;
+    public boolean consulta = false;
             
     //RegistroAVL registroDireita;
     //RegistroAVL registroEsquerda;

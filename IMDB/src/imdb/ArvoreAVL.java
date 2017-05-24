@@ -160,14 +160,22 @@ public class ArvoreAVL extends ArvoreBinaria{
      */
     public boolean remove(String... chave){
         
-        diminui = false;
-        retornoDaDelecao = false;
-        
         RegistroAVL aux = new RegistroAVL();
         for (String key : chave) {
             aux.indices.add(key);
         }
 
+        return remove(aux);
+    }
+    
+    /**
+     * @TODO Fazer método de remoção da árvore
+     */
+    public boolean remove(RegistroAVL aux){
+        
+        diminui = false;
+        retornoDaDelecao = false;
+        
         this.raiz = remove((RegistroAVL)this.raiz, aux);
         
         return retornoDaDelecao;
@@ -223,7 +231,7 @@ public class ArvoreAVL extends ArvoreBinaria{
 
                     aumentaEquilibrio(atual);
                     if (atual.equilibrio > RegistroAVL.PESO_DIREITA) {
-                        reequilibraDireita(atual);
+                        return reequilibraDireita(atual);
                     }
 
                     return atual;
@@ -235,7 +243,7 @@ public class ArvoreAVL extends ArvoreBinaria{
                     atual.setIndices(noRemovido.getIndices());
                     atual.setValores(noRemovido.getValores());
 
-                    diminuiEquilibrio(atual);
+                    diminuiEquilibrio((RegistroAVL) atual.registroEsquerda);
                     if (atual.equilibrio < RegistroAVL.PESO_ESQUERDA) {
                         return reequilibraEsquerda(atual);
                     }
@@ -310,4 +318,24 @@ public class ArvoreAVL extends ArvoreBinaria{
         raiz.registroDireita = rotacaoSimplesDireita((RegistroAVL)raiz.registroDireita);
         return rotacaoSimplesEsquerda(raiz);  
     }
-}
+    
+    public Registro buscaEMarca(RegistroAVL raiz, RegistroAVL registroAux) {
+        //se vazio 
+        if (raiz == null) {
+            return null;
+        } else {
+            int comparacao = raiz.comparaCom(registroAux);
+            if (comparacao == 0) {
+                raiz.consulta = true;
+                return raiz;
+            } else if (comparacao < 0) {
+                //verifica se raiz tem elemento a direita
+                return buscaEMarca((RegistroAVL) raiz.registroDireita, registroAux);
+            } else {
+                //se tem chama a busca novamente
+                return buscaEMarca((RegistroAVL) raiz.registroEsquerda, registroAux);
+            }
+        }
+    }
+    
+  }

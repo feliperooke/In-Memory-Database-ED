@@ -76,6 +76,24 @@ public class Tabela {
     public RegistroAVL busca(String... chave) {
         return (RegistroAVL)this.arvore.busca(chave);
     }
+    
+    public RegistroAVL buscaEMarca(String... chave) {
+        
+        RegistroAVL aux = new RegistroAVL();
+        for (String key : chave) {
+            aux.indices.add(key);
+        }
+        
+        return (RegistroAVL)this.arvore.buscaEMarca((RegistroAVL)this.arvore.raiz,aux);
+    }
+    
+    public boolean remove(String... chave) {
+        return this.arvore.remove(chave);
+    }
+    
+    public boolean remove(RegistroAVL registroAVL) {
+        return this.arvore.remove(registroAVL);
+    }
   
     public String getJson(){
         JSONObject object = new JSONObject();

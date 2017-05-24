@@ -82,6 +82,8 @@ public class ArvoreBinaria{
 
     }
 
+    
+    
     /**
      * @TODO Fazer método de remoção da árvore
      */
@@ -123,5 +125,7 @@ public class ArvoreBinaria{
             return buscaERemoveMaiorFilho(raiz.registroDireita);
         }
     }
+    
+    
 
 }

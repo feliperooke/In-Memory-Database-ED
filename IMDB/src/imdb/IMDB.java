@@ -9,9 +9,12 @@ package imdb;
 import imdb.utils.Lista;
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import jdk.nashorn.internal.parser.JSONParser;
 import org.json.JSONObject;
 
@@ -25,25 +28,6 @@ public class IMDB {
         /*
         Inspiração http://lokijs.org/#/
         */
-        
-        
-        ArvoreAVL arvoreAVL = new ArvoreAVL();
-        
-        for (int i = 0; i < 10; i++) {
-            RegistroAVL registroAVL = new RegistroAVL();
-            registroAVL.addIndice(Integer.toString(i));
-            
-            arvoreAVL.add(registroAVL);
-        }
-        
-        arvoreAVL.remove("5");
-        arvoreAVL.remove("4");
-        arvoreAVL.remove("3");
-        arvoreAVL.remove("2");
-        
-        TreePrinter.print(arvoreAVL.raiz);
-        
-        
         
         
         
@@ -80,12 +64,12 @@ public class IMDB {
         db.addTabela(new Tabela("{nome: 'datsrcln', campos:[], indices:['ndb_no','nutr_no','datasrc_id']}"));
         db.addTabela(new Tabela("{nome:'deriv_cd', campos:['derivcd_desc'], indices:['deriv_cd']}"));
         db.addTabela(new Tabela("{nome:'fd_group', campos:['fddrp_desc'], indices:['fdgrp_cd']}"));
-        db.addTabela(new Tabela("{nome:'food_des', campos:['long_desc','shrt_desc','comname','manufacname','survey','ref_desc','refuse','sciname','n_factor','pro_factor','fat_factor','cho_factor'], indices:['ndb_no','fdgrp_cd']}"));
+        db.addTabela(new Tabela("{nome:'food_des', campos:['fdgrp_cd','long_desc','shrt_desc','comname','manufacname','survey','ref_desc','refuse','sciname','n_factor','pro_factor','fat_factor','cho_factor'], indices:['ndb_no']}"));
         db.addTabela(new Tabela("{nome:'footnote', campos:['footnt_typ','nutr_no','footnt_txt'], indices:['ndb_no','footnt_no']}"));
         db.addTabela(new Tabela("{nome:'nut_data', campos:['nutr_val','num_data_pts','std_error','src_cd','deriv_cd','ref_ndb_no','add_nutr_mark','num_studies','min','max','df','low_eb','up_eb','stat_cmt','cc'], indices:['ndb_no','nutr_no']}"));
         db.addTabela(new Tabela("{nome:'nutr_def', campos:['units','tagname','nutrdesc','num_dec','sr_order'], indices:['nutr_no']}"));
         db.addTabela(new Tabela("{nome:'src_cd', campos:['srccd_desc'], indices:['src_cd']}"));
-        db.addTabela(new Tabela("{nome:'weight', campos:['seq','amount','msre_desc','gm_wgt','num_data_pts','std_dev'], indices:['ndb_no']}"));
+        db.addTabela(new Tabela("{nome:'weight', campos:['amount','msre_desc','gm_wgt','num_data_pts','std_dev'], indices:['ndb_no','seq']}"));
 
         /**
          * Exemplo de como adicionar registro na tabela data_src 
@@ -229,46 +213,371 @@ public class IMDB {
             System.out.println(e.getMessage());
         }
 
-        String busca = "______                            \n" +
-                      "| ___ \\                         _ \n" +
-                      "| |_/ / _   _  ___   ___  __ _ (_)\n" +
-                      "| ___ \\| | | |/ __| / __|/ _` |   \n" +
-                      "| |_/ /| |_| |\\__ \\| (__| (_| | _ \n" +
-                      "\\____/  \\__,_||___/ \\___|\\__,_|(_)\n" +
-                      "                                  " ;
+//        String busca = "______                            \n" +
+//                      "| ___ \\                         _ \n" +
+//                      "| |_/ / _   _  ___   ___  __ _ (_)\n" +
+//                      "| ___ \\| | | |/ __| / __|/ _` |   \n" +
+//                      "| |_/ /| |_| |\\__ \\| (__| (_| | _ \n" +
+//                      "\\____/  \\__,_||___/ \\___|\\__,_|(_)\n" +
+//                      "                                  " ;
         
-        System.out.println(busca);
+        String menu = "___  ___                 \n" +
+        "|  \\/  |                 \n" +
+        "| .  . | ___ _ __  _   _ \n" +
+        "| |\\/| |/ _ \\ '_ \\| | | |\n" +
+        "| |  | |  __/ | | | |_| |\n" +
+        "\\_|  |_/\\___|_| |_|\\__,_|\n" +
+        "                         \n";
+
+        menu += "Escolha uma opção: \n\n"+
+        "1 - Inserir Registro \n" +
+        "2 - Buscar Registro \n"+
+        "3 - Apagar Registro \n"+
+        "4 - Join \n"+
+        "5 - Select \n";
+        
+        
+        
         
         Scanner leitor = new Scanner(System.in);
 
-        while (true) {            
-//            System.out.print("Digite o nome da tabela do registro a ser buscado: ");
-//            Tabela tabela = null;
-//            while (tabela == null) {
-//                String nomeTabela = leitor.next();
-//                try {
-//                    tabela = db.getTabela(nomeTabela);
-//                } catch (Exception e) {
-//                    System.out.println("Tabela não encontrada, tente novamente.");
-//                }
-//            }
-//            
-//            System.out.print("Digite o indice do registro a ser buscado (caso o registro seja composto por mais de um indice, separe-os por ';'): ");
-//            Registro registro = null;
-//            while (registro == null) {                
-//                    String indicesDoRegistro = leitor.next();
-//                    registro = tabela.busca(indicesDoRegistro.split(";"));
-//                    if(registro == null) {
-//                        System.out.println("Registro não encontrada, tente novamente.");
-//                        TreePrinter.print(tabela.arvore.raiz);
-//                    }
-//            }
-//            
-//            
-//            
-//            System.out.println("O Registro buscado foi:");
-//            System.out.println(registro.getJson());
-//            
+        while (true) {
+            System.out.println(menu);
+        
+            System.out.print("Digite a opção:");
+            
+            String menuPrincipal = leitor.next();
+            leitor.nextLine();
+            Tabela tabela = null;
+            Tabela tabela2 = null;
+            
+            switch (menuPrincipal) {
+                case "1":
+                    System.out.print("Digite o nome da tabela do registro a ser inserido: ");
+                    while (tabela == null) {
+                        String nomeTabela = leitor.next();
+                        leitor.nextLine();
+                        try {
+                            tabela = db.getTabela(nomeTabela);
+                        } catch (Exception e) {
+                            System.out.println("Tabela não encontrada, tente novamente.");
+                        }
+                    }
+                    
+                    System.out.println("\n Insira os valores dos campos da tabela separando-os por \";\" respeitando a seguinte estrutura: \n"
+                            +tabela.getJson() + "\n");
+                    System.out.print("Insira os Indices:");
+                    String[] indices = leitor.nextLine().split(";");
+                    
+                    if(indices.length == tabela.getIndices().tamanho()){
+                        RegistroAVL registroAVL = new RegistroAVL();
+                        for (String indice : indices) {
+                            registroAVL.addIndice(indice);
+                        }
+                        
+                        System.out.print("\nInsira os Campos:");
+                        String[] campos = leitor.nextLine().split(";");
+                        if(campos.length == tabela.getCampos().tamanho()){
+                            for (String campo : campos) {
+                                registroAVL.addValor(campo);
+                            }
+                        }else{
+                            System.out.println("\nOps... faltaram campos. Não foi possível inserir.\n");
+                        }
+                        
+                        tabela.add(registroAVL);
+                    }else{
+                        System.out.println("\nOps... faltaram índices. Não foi possível inserir.\n");
+                    }
+
+                    break;
+                case "2":
+                    System.out.print("Digite o nome da tabela do registro a ser buscado: ");
+                    while (tabela == null) {
+                        String nomeTabela = leitor.next();
+                        leitor.nextLine();
+                        try {
+                            tabela = db.getTabela(nomeTabela);
+                        } catch (Exception e) {
+                            System.out.println("Tabela não encontrada, tente novamente.");
+                        }
+                    }
+                    
+                    System.out.print("Digite o indice do registro a ser buscado (caso o registro seja composto por mais de um indice, separe-os por ';'): ");
+                    Registro registroBusca = null;
+                    while (registroBusca == null) {                
+                            String indicesDoRegistro = leitor.next();
+                            leitor.nextLine();
+                            registroBusca = tabela.busca(indicesDoRegistro.split(";"));
+                            if(registroBusca == null) {
+                                System.out.println("Registro não encontrada, tente novamente.");
+                            }
+                    }
+
+                    System.out.println("O Registro buscado foi:");
+                    System.out.println(registroBusca.getJson());
+                    
+                    break;
+                case "3":
+                    System.out.print("Digite o nome da tabela do registro a ser apagado: ");
+                    while (tabela == null) {
+                        String nomeTabela = leitor.next();
+                        leitor.nextLine();
+                        try {
+                            tabela = db.getTabela(nomeTabela);
+                        } catch (Exception e) {
+                            System.out.println("Tabela não encontrada, tente novamente.");
+                        }
+                    }
+                    
+                    System.out.print("Digite o indice do registro a ser apagado (caso o registro seja composto por mais de um indice, separe-os por ';'): ");
+                    Registro registroApaga = null;
+                    while (registroApaga == null){                
+                        String indicesDoRegistro = leitor.next();
+                        leitor.nextLine();
+                        registroApaga = tabela.busca(indicesDoRegistro.split(";"));
+                        if(registroApaga == null) {
+                            System.out.println("Registro não encontrada, tente novamente.");
+                        }else{
+                            String msgApaga = registroApaga.getJson();
+                            boolean apagou = tabela.remove(indicesDoRegistro.split(";"));
+                            if(apagou) 
+                                System.out.println("Registro: \n"+msgApaga+"\nApagado com Sucesso!");
+                        }
+                    }
+                    
+                    break;
+                case "4":
+                    String menuJoin = "Escolha uma opção: \n\n"+
+                    "1 - Inner Join \n" +
+                    "2 - Left Join \n"+
+                    "3 - Right Join \n";
+                    
+                    System.out.println(menuJoin);
+                    
+                    String chave = null;
+                    
+                    String opcaoJoin = leitor.next();
+                    leitor.nextLine();
+                    
+                    switch (opcaoJoin){
+                        case "1":
+                            System.out.println("SELECT * FROM <Tabela com apenas 1 chave primária> \n"
+                                    + "INNER JOIN <Tabela com chave estrangeira> \n"
+                                    + "ON (tabela1.<Nome da Chave> = tabela2.<Nome da Chave>)\n");
+                            
+                            System.out.print("Informe o nome da <Tabela que contém apenas 1 chave primária>:");
+                            while (tabela == null) {
+                                String nomeTabela = leitor.next();
+                                leitor.nextLine();
+                                try {
+                                    tabela = db.getTabela(nomeTabela);
+                                    if(tabela.getIndices().tamanho() != 1){
+                                        System.out.println("Essa tabela contem mais de um índice. Tente outra.");
+                                    }
+                                } catch (Exception e) {
+                                    System.out.println("Tabela não encontrada, tente novamente:");
+                                }
+                            }
+                            
+                            System.out.print("Informe o nome da <Tabela que contém a chave estrangeira>:");
+                            while (tabela2 == null) {
+                                String nomeTabela = leitor.next();
+                                leitor.nextLine();
+                                try {
+                                    tabela2 = db.getTabela(nomeTabela);
+                                } catch (Exception e) {
+                                    System.out.println("Tabela não encontrada, tente novamente:");
+                                }
+                            }
+                            System.out.print("Informe o <Nome da Chave>:");
+                            chave = null;
+                            while (chave == null) {
+                                chave = leitor.next();
+                                leitor.nextLine();
+                                try {
+                                    if(!tabela2.getIndices().contem(chave)){
+                                        chave = null;
+                                        throw new IllegalArgumentException();
+                                    }
+                                } catch (Exception e) {
+                                    System.out.println("Chave não encontrada, tente outra:");
+                                }
+                            }
+                            
+                            Lista<RegistroAVL[]> inner = db.innerJoin(tabela, tabela2, chave, chave);
+                            
+                            System.out.println("\n O resultado da consulta apresentou "+ inner.tamanho()+" registros.");
+                            
+                            break;
+                        case "2":
+                            System.out.println("SELECT * FROM <Tabela com apenas 1 chave primária> \n"
+                                    + "LEFT OUTER JOIN <Tabela com chave estrangeira> \n"
+                                    + "ON (tabela1.<Nome da Chave> = tabela2.<Nome da Chave>)\n");
+                            
+                            System.out.print("Informe o nome da <Tabela que contém apenas 1 chave primária>:");
+                            while (tabela == null) {
+                                String nomeTabela = leitor.next();
+                                leitor.nextLine();
+                                try {
+                                    tabela = db.getTabela(nomeTabela);
+                                    if(tabela.getIndices().tamanho() != 1){
+                                        System.out.println("Essa tabela contem mais de um índice. Tente outra.");
+                                        tabela = null;
+                                    }
+                                } catch (Exception e) {
+                                    System.out.println("Tabela não encontrada, tente novamente:");
+                                }
+                            }
+                            
+                            System.out.print("Informe o nome da <Tabela que contém a chave estrangeira>:");
+                            while (tabela2 == null) {
+                                String nomeTabela = leitor.next();
+                                leitor.nextLine();
+                                try {
+                                    tabela2 = db.getTabela(nomeTabela);
+                                } catch (Exception e) {
+                                    System.out.println("Tabela não encontrada, tente novamente:");
+                                }
+                            }
+                            System.out.print("Informe o <Nome da Chave>:");
+                            chave = null;
+                            while (chave == null) {
+                                chave = leitor.next();
+                                leitor.nextLine();
+                                try {
+                                    if(!tabela2.getIndices().contem(chave)){
+                                        chave = null;
+                                        throw new IllegalArgumentException();
+                                    }
+                                } catch (Exception e) {
+                                    System.out.println("Chave não encontrada, tente outra:");
+                                }
+                            }
+                            
+                            Lista<RegistroAVL[]> left = db.leftOuterJoinFlag(tabela, tabela2, chave, chave);
+                            
+                            System.out.println("\n O resultado da consulta apresentou "+ left.tamanho()+" registros.");
+                            
+                            break;
+                        case "3":
+                            System.out.println("SELECT * FROM <Tabela com apenas 1 chave primária> \n"
+                                    + "RIGHT OUTER JOIN <Tabela com chave estrangeira> \n"
+                                    + "ON (tabela1.<Nome da Chave> = tabela2.<Nome da Chave>)\n");
+                            
+                            System.out.print("Informe o nome da <Tabela que contém apenas 1 chave primária>:");
+                            while (tabela == null) {
+                                String nomeTabela = leitor.next();
+                                leitor.nextLine();
+                                try {
+                                    tabela = db.getTabela(nomeTabela);
+                                    if(tabela.getIndices().tamanho() != 1){
+                                        System.out.println("Essa tabela contem mais de um índice. Tente outra.");
+                                        tabela = null;
+                                    }
+                                } catch (Exception e) {
+                                    System.out.println("Tabela não encontrada, tente novamente:");
+                                }
+                            }
+                            
+                            System.out.print("Informe o nome da <Tabela que contém a chave estrangeira>:");
+                            while (tabela2 == null) {
+                                String nomeTabela = leitor.next();
+                                leitor.nextLine();
+                                try {
+                                    tabela2 = db.getTabela(nomeTabela);
+                                } catch (Exception e) {
+                                    System.out.println("Tabela não encontrada, tente novamente:");
+                                }
+                            }
+                            System.out.print("Informe o <Nome da Chave>:");
+                            chave = null;
+                            while (chave == null) {
+                                chave = leitor.next();
+                                leitor.nextLine();
+                                try {
+                                    if(!tabela2.getIndices().contem(chave)){
+                                        chave = null;
+                                        throw new IllegalArgumentException();
+                                    }
+                                } catch (Exception e) {
+                                    System.out.println("Chave não encontrada, tente outra:");
+                                }
+                            }
+                            
+                            Lista<RegistroAVL[]> right = db.rightOuterJoin(tabela, tabela2, chave, chave);
+                            
+                            System.out.println("\n O resultado da consulta apresentou "+ right.tamanho()+" registros.");
+                            break;
+                        default:
+                            System.out.println("Ops... Opção inválida, retornando ao menu principal...");
+                            break;
+                    }
+                    
+                    break;
+                case "5":
+                  
+                    System.out.println("SELECT COUNT(*) FROM <Tabela> WHERE <campo 1 = valor 1> AND <campo 2 = valor 2> AND ...\n");
+
+                    String restricaoValor = null;
+                    
+                    System.out.print("Informe o nome da <Tabela>:");
+                    while (tabela == null) {
+                        String nomeTabela = leitor.next();
+                        leitor.nextLine();
+                        try {
+                            tabela = db.getTabela(nomeTabela);
+                        } catch (Exception e) {
+                            System.out.println("Tabela não encontrada, tente novamente:");
+                        }
+                    }
+
+                    System.out.print("Informe as restrições separando-as por \";\" da seguinte forma: campo1 = valor1; campo2 = valor2\n"
+                            + "(Caso queira executar a consulta sem restrições informe: \"-\" ): ");
+                    while (restricaoValor == null) {
+                        restricaoValor = leitor.nextLine();
+                        if(!restricaoValor.equals("-")){
+                            String[][]restricoes = null;
+                            try {
+                                String[] aux = restricaoValor.trim().split(";");
+                                restricoes = new String[aux.length][2];
+
+                                for (int i=0; i < aux.length; i++) {
+                                    String[] aux2 = aux[i].trim().split("=");
+                                    restricoes[i][0] = aux2[0].trim();
+                                    restricoes[i][1] = aux2[1].trim();
+                                }
+                                
+                                Lista<RegistroAVL> select = db.select(tabela, restricoes);
+                                System.out.println("\n O resultado da consulta apresentou " + select.tamanho() + " registros.");
+                                
+                                if(select.tamanho()==1){
+                                    System.out.println(select.primeira.getValor().getJson());
+                                }
+                                
+                            } catch (Exception e) {
+                                System.out.println("Ops... parece que não existe algum campo da restrição, tente novamente:");
+                                restricaoValor = null;
+                            }
+                        }else{
+                             Lista<RegistroAVL> select = db.select(tabela, null);
+                            
+                            System.out.println("\n O resultado da consulta apresentou " + select.tamanho() + " registros.");
+                        }
+                    }
+                    
+                   
+
+                    break;
+                default:
+                    System.out.println("Ops... Opção inválida, retornando ao menu principal...");
+                    break;
+            }
+            
+            
+            
+            
+            
             //Lista<RegistroAVL[]> uniao = db.rightOuterJoin(db.getTabela("fd_group"), db.getTabela("food_des"), "fdgrp_cd", "fdgrp_cd");
             //Lista<RegistroAVL[]> uniao = db.leftOuterJoin(db.getTabela("fd_group"), db.getTabela("food_des"), "fdgrp_cd", "fdgrp_cd");
             
@@ -290,9 +599,9 @@ public class IMDB {
 //                    segundo = uniao.get(i)[1].getJson();
 //                System.out.println(primeiro+"--->"+segundo);
 //            }
-//            
-            break;
             
+//            break;
+              System.out.println("\n\n\n");
         }
         
                 

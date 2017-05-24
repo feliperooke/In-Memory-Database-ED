@@ -12,8 +12,8 @@ package imdb.utils;
  */
 public class Lista<O>{
     
-    private Celula<O> primeira;
-    private Celula<O> ultima;
+    public Celula<O> primeira;
+    public Celula<O> ultima;
     private int tamanho = 0;
     
     public void add(O elemento){
